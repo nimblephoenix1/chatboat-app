@@ -5,21 +5,19 @@ export default async function handler(req, res) {
     if (!message) {
       return res.status(400).json({ reply: "No message provided" });
     }
-
-    const hfResponse = await fetch(
-      "https://router.huggingface.co/models/mistralai/Mistral-7B-Instruct",
-      {
-        method: "POST",
-        headers: {	
-          Authorization: `Bearer ${process.env.HF_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: message,
-        }),
-      }
-    );
-
+const hfResponse = await fetch(
+  "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.HF_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      inputs: message,
+    }),
+  }
+);
     const data = await hfResponse.json();
 
     let reply = "No response from model.";
