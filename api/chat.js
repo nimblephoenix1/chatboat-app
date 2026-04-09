@@ -7,10 +7,10 @@ export default async function handler(req, res) {
     }
 
     const hfResponse = await fetch(
-      "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct",
+      "https://router.huggingface.co/models/mistralai/Mistral-7B-Instruct",
       {
         method: "POST",
-        headers: {
+        headers: {	
           Authorization: `Bearer ${process.env.HF_TOKEN}`,
           "Content-Type": "application/json",
         },
@@ -35,4 +35,4 @@ export default async function handler(req, res) {
   } catch (error) {
     res.status(500).json({ reply: "Server error: " + error.message });
   }
-}
+}	
