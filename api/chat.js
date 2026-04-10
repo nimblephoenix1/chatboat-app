@@ -18,7 +18,15 @@ const hfResponse = await fetch(
     }),
   }
 );
-    const data = await hfResponse.json();
+    const text = await hfResponse.text();
+
+    let data;
+    try {
+        data = JSON.parse(text);
+        } catch 
+		{ 
+		return res.status(500).json({ reply: "HF Error: " + text });
+        }
 
     let reply = "No response from model.";
 
