@@ -3,10 +3,10 @@ export default async function handler(req, res) {
     const { message } = req.body;
 
     if (!message) {
-      return res.status(400).json({ reply: "No message provided" });
+      return res.status(400).json({ reply: "No message provided " });
     }
 const hfResponse = await fetch(
-  "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct",
+  ""https://router.huggingface.co/hf-inference/models/tiiuae/falcon-7b-instruct"",
   {
     method: "POST",
     headers: {
@@ -22,7 +22,7 @@ const hfResponse = await fetch(
 
     let reply = "No response from model.";
 
-    if (Array.isArray(data) && data[0]?.generated_text) {
+		if (Array.isArray(data) && data[0]?.generated_text) {
       reply = data[0].generated_text;
     } else if (data.error) {
       reply = "Error: " + data.error;
