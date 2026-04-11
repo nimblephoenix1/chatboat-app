@@ -5,29 +5,23 @@ export default async function handler(req, res) {
     if (!message) {
       return res.status(400).json({ reply: "No message provided" });
     }
-
-    const hfResponse = await fetch(
-      "https://router.huggingface.co/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "mistralai/Mistral-7B-Instruct-v0.2",
-          messages: [
-            { role: "user", content: message }
-          ],
-          max_tokens: 200
-        }),
-      }
-    );
-
+const hfResponse = await fetch(
+  "https://router.huggingface.co/hf-inference/models/google/flan-t5-base",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.HF_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      inputs: message,
+    }),
+  }
+);
     // 👇 SAFELY handle response (prevents JSON crash)
     const text = await hfResponse.text();
 
-    let data;
+    let data;   
     try {
       data = JSON.parse(text);
     } catch {
