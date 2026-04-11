@@ -13,57 +13,29 @@ export default async function handler(req, res) {
     }
 
     // ✅ Call Hugging Face
-    const hfResponse = await fetch(
-      "https://api-inference.huggingface.co/models/google/flan-t5-small",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: message,
-        }),
-      }
-    );
-
-    const text = await hfResponse.text();
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return res.status(500).json({ reply: "Invalid JSON from HF: " + text });
-    }
-
-    // 🔁 Handle model loading (VERY common on free tier)
-    if (data.error && data.error.toLowerCase().includes("loading")) {
-      return res.status(503).json({
-        reply: "Model is loading, try again in a few seconds...",
-      });
-    }
-
-    // ❗ Handle API errors
-    if (!hfResponse.ok || data.error) {
-      return res.status(500).json({
-        reply: "HF Error: " + (data.error || hfResponse.statusText),
-      });
-    }
-
-    // ✅ Extract response safely
-    let reply = "No response from model.";
-
-    if (Array.isArray(data)) {
-      reply = data[0]?.generated_text || reply;
-    } else if (data.generated_text) {
-      reply = data.generated_text;
-    }
-
-    return res.status(200).json({ reply });
-
-  } catch (error) {
-    return res.status(500).json({
-      reply: "Server error: " + error.message,
-    });
+  const hfResponse = await fetch(
+  "https://router.huggingface.co/v1/chat/completions",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.HF_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/flan-t5-small",
+      messages: [
+        { role: "user", content: message }
+      ],
+      max_tokens: 200
+    }),
   }
-}
+);
+
+const data = await hfResponse.json();
+
+const reply =
+  data?.choices?.[0]?.message?.content ||
+  data?.error ||
+  "No response";
+
+res.status(200).json({ reply });
