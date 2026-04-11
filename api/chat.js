@@ -30,11 +30,13 @@ const hfResponse = await fetch(
       });
     }
 
-    // 👇 Extract reply safely
-    const reply =
-      data?.choices?.[0]?.message?.content ||
-      data?.error ||
-      "No response from model.";
+    let reply = "No response from model.";
+
+if (Array.isArray(data)) {
+  reply = data[0]?.generated_text || reply;
+} else if (data.error) {
+  reply = "Error: " + data.error;
+}
 
     return res.status(200).json({ reply });
 
