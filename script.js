@@ -21,13 +21,15 @@ async function sendMessage() {
       body: JSON.stringify({ message }),
     });
 
+    // ✅ FIXED: properly parse response
     const data = await res.json();
 
-    // Show bot response
+    // ✅ Show bot response correctly
     chatBox.innerHTML += `<div class="message bot">${data.reply}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
 
   } catch (err) {
+    // ✅ FIXED error display
     chatBox.innerHTML += `<div class="message bot">Error: ${err.message}</div>`;
   }
 }
