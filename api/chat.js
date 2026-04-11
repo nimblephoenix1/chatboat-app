@@ -1,42 +1,30 @@
-  export default async function handler(req, res) {
+export default async function handler(req, res) {
   try {
     const { message } = req.body;
 
     if (!message) {
       return res.status(400).json({ reply: "No message provided" });
     }
-const hfResponse = await fetch(
-  "https://router.huggingface.co/inference/models/google/flan-t5-base",
-  {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.HF_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      inputs: message,
-    }),
-  }
-);
-    // 👇 SAFELY handle response (prevents JSON crash)
-    const text = await hfResponse.text();
 
-    let data;   
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return res.status(500).json({
-        reply: "HF Error: " + text,
-      }                                     );
-    }
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-3.5-turbo",
+        messages: [
+          { role: "user", content: message }
+        ],
+      }),
+    });
 
-    let reply = "No response from model.";
+    const data = await response.json();
 
-if (Array.isArray(data)) {
-  reply = data[0]?.generated_text || reply;
-} else if (data.error) {
-  reply = "Error: " + data.error;
-}
+    const reply =
+      data?.choices?.[0]?.message?.content ||
+      "No response";
 
     return res.status(200).json({ reply });
 
