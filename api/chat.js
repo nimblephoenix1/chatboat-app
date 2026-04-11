@@ -6,7 +6,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ reply: "No message provided " });
     }
 const hfResponse = await fetch(
-  "https://router.huggingface.co/hf-inference/models/google/flan-t5-base",
+  "https://router.huggingface.co/hf-inference/models/google/flan-t5-small",
   {
     method: "POST",
     headers: {
