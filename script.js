@@ -25,7 +25,7 @@ async function sendMessage() {
     const data = await res.json();
 
     // ✅ Show bot response correctly
-    chatBox.innerHTML += `<div class="message bot">${data.reply}</div>`;
+    chatBox.innerHTML += `<div class="message bot">${typeof data.reply === "string" ? data.reply : JSON.stringify(data.reply)}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
 
   } catch (err) {
