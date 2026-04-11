@@ -6,7 +6,7 @@
       return res.status(400).json({ reply: "No message provided" });
     }
 const hfResponse = await fetch(
-  "https://router.huggingface.co/hf-inference/models/google/flan-t5-base",
+  "https://router.huggingface.co/inference/models/google/flan-t5-base",
   {
     method: "POST",
     headers: {
@@ -27,7 +27,7 @@ const hfResponse = await fetch(
     } catch {
       return res.status(500).json({
         reply: "HF Error: " + text,
-      });
+      }                                     );
     }
 
     let reply = "No response from model.";
