@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  try {
+  try 
     const { message } = req.body;
 
     if (!message) {
