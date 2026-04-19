@@ -1,16 +1,38 @@
-  async function sendMessage() {
-  const input = document.getElementById("input");
-  const chatBox = document.getElementById("chat-box");
+const PASSWORD = "mysecret123";
 
-  const message = input.value.trim();
+function checkPassword() {
+  const input = document.getElementById("password").value;
+
+  if (input === PASSWORD) {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("chat").style.display = "block";
+  } else {
+    document.getElementById("error").innerText = "Wrong password!";
+  }
+}
+
+async function sendMessage() {
+  const messageInput = document.getElementById("message");
+  const chatbox = document.getElementById("chatbox");
+  const message = messageInput.value;
+
   if (!message) return;
 
-  // Show user message
-  chatBox.innerHTML += `<div class="message user">${message}</div>`;
-  input.value = "";
+  // 👤 Add user message
+  const userMsg = document.createElement("div");
+  userMsg.className = "msg user";
+  userMsg.innerText = message;
+  chatbox.appendChild(userMsg);
 
-  // Scroll down
-  chatBox.scrollTop = chatBox.scrollHeight;
+  messageInput.value = "";
+
+  // 🤖 Loading message
+  const botMsg = document.createElement("div");
+  botMsg.className = "msg bot";
+  botMsg.innerText = "Thinking...";
+  chatbox.appendChild(botMsg);
+
+  chatbox.scrollTop = chatbox.scrollHeight;
 
   try {
     const res = await fetch("/api/chat", {
@@ -21,15 +43,12 @@
       body: JSON.stringify({ message }),
     });
 
-    // ✅ FIXED: properly parse response
     const data = await res.json();
 
-    // ✅ Show bot response correctly
-    chatBox.innerHTML += `<div class="message bot">${typeof data.reply === "string" ? data.reply : JSON.stringify(data.reply)}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-
+    botMsg.innerText = data.reply;
   } catch (err) {
-    // ✅ FIXED error display
-    chatBox.innerHTML += `<div class="message bot">Error: ${err.message}</div>`;
+    botMsg.innerText = "Error talking to AI.";
   }
+
+  chatbox.scrollTop = chatbox.scrollHeight;
 }
