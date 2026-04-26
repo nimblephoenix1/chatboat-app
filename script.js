@@ -1,24 +1,44 @@
-const PASSWORD = "q12we34rt56";
+// ✅ No password stored here anymore — it's in Vercel's environment variables
+let sessionPassword = "";
 
-function checkPassword() {
+async function checkPassword() {
   const input = document.getElementById("password").value;
+  const errorEl = document.getElementById("error");
 
-  if (input === PASSWORD) {
+  errorEl.innerText = "Checking...";
+
+  try {
+    // Send a test message to the server to validate the password
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: input, message: "ping" }),
+    });
+
+    if (res.status === 401) {
+      errorEl.innerText = "Wrong password!";
+      return;
+    }
+
+    // ✅ Password was accepted — store it in memory for this session only
+    sessionPassword = input;
     document.getElementById("login").style.display = "none";
     document.getElementById("chat").style.display = "block";
-  } else {
-    document.getElementById("error").innerText = "Wrong password!";
+    errorEl.innerText = "";
+
+  } catch (err) {
+    errorEl.innerText = "Could not connect. Try again.";
   }
 }
 
 async function sendMessage() {
   const messageInput = document.getElementById("message");
   const chatbox = document.getElementById("chatbox");
-  const message = messageInput.value;
+  const message = messageInput.value.trim();
 
   if (!message) return;
 
-  // 👤 Add user message
+  // Add user message to chat
   const userMsg = document.createElement("div");
   userMsg.className = "msg user";
   userMsg.innerText = message;
@@ -26,7 +46,7 @@ async function sendMessage() {
 
   messageInput.value = "";
 
-  // 🤖 Loading message
+  // Add loading placeholder
   const botMsg = document.createElement("div");
   botMsg.className = "msg bot";
   botMsg.innerText = "Thinking...";
@@ -35,17 +55,16 @@ async function sendMessage() {
   chatbox.scrollTop = chatbox.scrollHeight;
 
   try {
+    // ✅ Password travels with each request — validated on the server each time
     const res = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: sessionPassword, message }),
     });
 
     const data = await res.json();
+    botMsg.innerText = data.reply || "No response.";
 
-    botMsg.innerText = data.reply;
   } catch (err) {
     botMsg.innerText = "Error talking to AI.";
   }
