@@ -1,6 +1,6 @@
   (function () {
     const script = document.currentScript;
-    const API_BASE = 'https://YOUR-APP.vercel.app'; // update this to your Vercel URL
+    const API_BASE = 'https://chatboat-app-omega.vercel.app/'; // update this to your Vercel URL
     const password = script.getAttribute('data-password') || '';
     const title = script.getAttribute('data-title') || 'AI Assistant';
     const color = script.getAttribute('data-color') || '#4f46e5';
