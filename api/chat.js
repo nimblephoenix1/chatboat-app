@@ -19,7 +19,7 @@
         body: JSON.stringify({
           model: "openai/gpt-4o-mini",
           messages: [
-            { role: "system", content: "You are a helpful assistant." },
+            { role: "system", content: process.env.SYSTEM_PROMPT },
             ...messages,
           ],
         }),
